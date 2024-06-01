@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import { GithubAuthProvider, GoogleAuthProvider } from 'firebase/auth/web-extension'
 import React from 'react'
 import { FaChevronRight } from 'react-icons/fa6'
+import { auth } from '../config/firebase.config'
+import { GithubAuthProvider, GoogleAuthProvider, signInWithRedirect,  } from 'firebase/auth'
 
 // eslint-disable-next-line react/prop-types
 const AuthButtonWithProvider = ({ Icon, Label, Provider }) => {
@@ -12,13 +13,31 @@ const AuthButtonWithProvider = ({ Icon, Label, Provider }) => {
     const handleClick= async ()=>{
         switch(Provider){
             case 'GoogleAuthProvider':
-                console.log("Inside the Google auth");
+              await signInWithRedirect(auth,googleAuthProvider)
+              .then((result)=>{
+                console.log(result)
+              })
+              .catch((err)=>{
+                console.log(`Error:${err.Message}`)
+              })
                 break;
             case 'GithubAuthProvider':
-                console.log("Inside the Github auth");  
+                await signInWithRedirect(auth,githubAuthProvider)
+              .then((result)=>{
+                console.log(result)
+              })
+              .catch((err)=>{
+                console.log(`Error:${err.Message}`)
+              })
                 break;
                 default:
-                    console.log("Inside the Google auth");
+                    await signInWithRedirect(auth,googleAuthProvider)
+                    .then((result)=>{
+                      console.log(result)
+                    })
+                    .catch((err)=>{
+                      console.log(`Error:${err.Message}`)
+                    })
                     break;
 
         }

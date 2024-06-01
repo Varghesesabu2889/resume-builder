@@ -1,18 +1,20 @@
-import {getApp,getApps,initializeApp} from "firebase/app"
-import {getAuth} from "firebase/auth"
-import {getFirestore} from "firebase/firestore"
+// firebase.config.js
+
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAuWR0qCv6qextm9lzXXl3BF4nscLXEhcw",
-    authDomain: "resumebooster-87ecf.firebaseapp.com",
-    projectId: "resumebooster-87ecf",
-    storageBucket: "resumebooster-87ecf.appspot.com",
-    messagingSenderId: "232286275263",
-    appId: "1:232286275263:web:687eabd3bbc88eaea2680a"
-  };
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APPID,
+};
 
- const app = getApps.length > 0 ? getApp(): initializeApp(firebaseConfig)
- const auth = getAuth(app)
- const db = getFirestore(app)
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
- export {auth,db};
+export { auth, db };
