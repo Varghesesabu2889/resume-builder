@@ -8,7 +8,7 @@ import useUser from "../hooks/useUser";
 import MainSpinner from "../components/MainSpinner";
 
 const Authentication = () => {
-  const { data, isLoading } = useUser();
+  const { data, isLoading,isError } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
