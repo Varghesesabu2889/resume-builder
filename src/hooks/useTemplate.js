@@ -1,31 +1,15 @@
-import { useQuery } from "react-query";
-import { toast } from "react-toastify";
-import { getTemplates } from "../api";
+// useTemplate hook
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../config/firebase.config';
+import { useQuery } from 'react-query';
 
 const useTemplate = () => {
-  const { data, isLoading, isError, refetch } = useQuery(
-    "templates",
-    async () => {
-      try {
-        const templates = await getTemplates();
-        return templates;
-      } catch (err) {
-        console.error(err);
-        toast.error("Something went wrong");
-        throw err; 
-      }
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  return {
-    data,
-    isLoading,
-    isError,
-    refetch,
+  const getTemplates = async () => {
+    const querySnapshot = await getDocs(query(collection(db, "templates"), orderBy("timeStamp", "desc")));
+    return querySnapshot.docs.map((doc) => doc.data());
   };
+
+  return useQuery(["templates"], () => getTemplates());
 };
 
 export default useTemplate;

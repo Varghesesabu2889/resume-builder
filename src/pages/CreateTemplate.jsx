@@ -1,12 +1,15 @@
+// CreateTemplate Component
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import React, { useState } from 'react';
-import { FaTrash, FaUpload } from 'react-icons/fa';
-import { PuffLoader } from 'react-spinners';
+import React, { useEffect, useState } from 'react';
+import { FaSpinner, FaTrash, FaUpload } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import { db, storage } from '../config/firebase.config';
-import { initialTags } from '../utils/helpers';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { adminIds, initialTags } from '../utils/helpers';
+import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import useTemplate from '../hooks/useTemplate';
+import useUser from '../hooks/useUser';
+import { useNavigate } from 'react-router-dom';
 
 const CreateTemplate = () => {
   const [formData, setFormData] = useState({
@@ -34,7 +37,9 @@ const CreateTemplate = () => {
       ...prevRec, [name]: value
     }));
   };
+const {data:user, isLoading}= useUser()
 
+const navigate = useNavigate()
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     setImageAsset((prevAsset) => (
@@ -50,14 +55,14 @@ const CreateTemplate = () => {
         (snapshot) => {
           setImageAsset((prevAsset) => ({
             ...prevAsset,
-            progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100, // Correctly updating progress
+            progress: (snapshot.bytesTransferred / snapshot.totalBytes) * 100, 
           }));
         },
         (error) => {
-          if (error.message.includes("storage/unauthorized")) { // Error handling for specific error
+          if (error.message.includes("storage/unauthorized")) {
             toast.error(`Error: Authorization revoked`);
           } else {
-            toast.error(`Error: ${error.message}`); // General error handling
+            toast.error(`Error: ${error.message}`);
           }
         },
         () => {
@@ -72,7 +77,7 @@ const CreateTemplate = () => {
         }
       );
     } else {
-      toast.warning("Invalid File Format"); // Warning for invalid file format
+      toast.warning("Invalid File Format");
       setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: false }));
     }
   };
@@ -97,15 +102,13 @@ const CreateTemplate = () => {
 
   const isAllowed = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    return allowedTypes.includes(file.type); // Correctly checking file type
+    return allowedTypes.includes(file.type);
   };
 
   const handleSelectedTags = (tag) => {
     if (selectedTags.includes(tag)) {
-      // If selected then remove it
       setSelectedTags(selectedTags.filter(selected => selected !== tag));
     } else {
-      // If not selected, add it
       setSelectedTags([...selectedTags, tag]);
     }
   };
@@ -118,105 +121,152 @@ const CreateTemplate = () => {
       title: formData.title,
       imageURL: imageAsset.uri,
       tags: selectedTags,
-      name: templates && templates.length > 0 
-        ? `Template ${templates.length + 1}` 
-        : `Template1`,
+      name: templates && templates.length >0
+      ? `Template${templates.length+1}`
+      : "Template1",
       timeStamp: timeStamp
     };
-
-    await setDoc(doc(db, "templates", id), _doc)
-      .then(() => {
-        setFormData((prevData) => ({
-          ...prevData, title: "", imageURL: ""
-        }));
-        setImageAsset((prevAsset) => ({ ...prevAsset, uri: null }));
-        setSelectedTags([]);
-        templatesRefetch();
-        toast.success("Data pushed to cloud");
-      })
-      .catch(err => {
-        toast.error(`Error: ${err.message}`);
-      });
+    await setDoc(doc(db,"templates",id),_doc).then(()=>{
+      setFormData((prevData)=>({
+        ...prevData,title:"",
+        imageURL:""}))
+        setImageAsset((prevAsset)=>({...prevAsset,
+          uri:null,
+        }))  
+        setSelectedTags([])
+        templatesRefetch()
+        toast.success("New template added successfully")
+    }).catch(err=>{
+      toast.error(`Error: ${err.message}`)
+    })
   };
+  // remove data from the cloud
+  const removeTemplate = async (template) =>{
+    const deleteRef = ref(storage,template?.imageURL)
+    await deleteObject(deleteRef).then(async()=>{
+ await deleteDoc(doc(db,"templates",template?._id)).then(()=>{
+  toast.success("Template deleted successfully..")
+  templatesRefetch()
+ }).catch(err =>{
+  toast.error(`Error: ${err.message}`)
+ })
+})
+  }
+
+
+useEffect(()=>{
+if(!isLoading && !adminIds.includes(user?.uid)){
+  navigate('/',{replace:true})
+}
+},[user,isLoading])
+
 
   return (
     <div className='w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12'>
-      {/* Left container */}
       <div className='col-span-12 lg:col-span-4 2xl:col-span-3 w-full flex flex-1 items-center justify-start flex-col gap-4 px-2'>
-        {/* Heading */}
         <div className="w-full">
           <p className="text-lg to-txtPrimary">Create a new Template</p>
         </div>
-        {/* Template ID section */}
         <div className="w-full flex items-center justify-end">
           <p className="text-base text-gray-400 uppercase font-semibold">TempId:{""}</p>
-          <p className="text-sm text-txtDark capitalize font-bold">{templates && templates.length > 0 ? `Template${templates.length + 1}` : "Template1"}</p>
+          <p className="text-sm text-txtDark capitalize font-bold">
+            {templates && templates.length > 0 ? 
+            `Template${templates.length + 1}` 
+            : "Template1"}
+          </p>
         </div>
-        {/* Template title section */}
         <input type="text"
           name="title"
           className='w-full px-4 py-4 rounded-md bg-transparent border border-gray-300 text-lg text-txtPrimary focus:text-txtDark focus:shadow-md outline-none'
           placeholder='Template Title'
           value={formData.title}
           onChange={handleInputChange} />
-        {/* File uploader section */}
         <div className="w-full bg-gray-50 backdrop-blur-md h-[420px] lg:h-[620px] 2xl:h-[440px] rounded-md border-2 border-dotted border-gray-300 cursor-pointer flex items-center justify-center">
           {imageAsset.isImageLoading ? (
-            <React.Fragment>
-              <div className="flex flex-col items-center justify-center gap-4">
-                <PuffLoader color='#498FCD' size={40} />
-                <p>{imageAsset?.progress.toFixed(2)}%</p>
-              </div>
-            </React.Fragment>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <FaSpinner color='#498FCD' size={40} />
+              <p>{imageAsset?.progress.toFixed(2)}%</p>
+            </div>
           ) : (
-            <React.Fragment>
-              {!imageAsset?.uri ? (
-                <React.Fragment>
-                  <label className='w-full cursor-pointer h-full'>
-                    <div className="flex flex-col items-center justify-center h-full w-full">
-                      <div className="flex flex-col items-center justify-center cursor-pointer">
-                        <FaUpload className='text-2xl' />
-                        <p className='text-lg text-txtLight gap-4'>Click to upload</p>
-                      </div>
-                    </div>
-                    <input type="file" className='w-0 h-0' accept='.jpg,.jpeg,.png' onChange={handleImageChange} />
-                  </label>
-                </React.Fragment>) : (
-                <React.Fragment>
-                  <div className="relative w-full h-full overflow-hidden rounded-md">
-                    <img src={imageAsset?.uri} className='w-full h-full object-cover' loading='eager' alt="" />
-                    {/* Delete action */}
-                    <div className="absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center bg-red-500 cursor-pointer" onClick={deleteAnImageObject}>
-                      <FaTrash className='text-white' />
-                    </div>
+            !imageAsset?.uri ? (
+              <label className='w-full cursor-pointer h-full'>
+                <div className="flex flex-col items-center justify-center h-full w-full">
+                  <div className="flex flex-col items-center justify-center cursor-pointer">
+                    <FaUpload className='text-2xl' />
+                    <p className='text-lg text-txtLight gap-4'>Click to upload</p>
                   </div>
-                </React.Fragment>
-              )}
-            </React.Fragment>
+                </div>
+                <input type="file" className='w-0 h-0' accept='.jpg,.jpeg,.png' onChange={handleImageChange} />
+              </label>
+            ) : (
+              <div className="relative w-full h-full overflow-hidden rounded-md">
+                <img src={imageAsset?.uri} className='w-full h-full object-cover' loading='eager' alt="" />
+                <div className="absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center bg-red-500 cursor-pointer" onClick={deleteAnImageObject}>
+                  <FaTrash className='text-white' />
+                </div>
+              </div>
+            )
           )}
         </div>
-        {/* Tags */}
         <div className='w-full flex items-center flex-wrap gap-2 border-gray-300 py-1 rounded-md'>
           {initialTags.map((tag, index) => (
-            <div key={index} onClick={() => handleSelectedTags(tag)} className={`border border-gray-300 py-1 px-2 rounded-md cursor-pointer ${selectedTags.includes(tag) ? "bg-blue-500 text-white" : ""}`}>
-              <p className='text-xs'>{tag}</p>
+            <div key={index} className={`px-3 py-1 border rounded-md ${selectedTags.includes(tag)
+              ? 'border-txtDark bg-txtDark text-white'
+              : 'border-gray-300 bg-transparent text-gray-300'
+              } cursor-pointer`}
+              onClick={() => handleSelectedTags(tag)}>
+              <p className="text-sm">{tag}</p>
             </div>
           ))}
         </div>
-        {/* button action */}
-        <button type='button'
-          className='w-full bg-blue-700 text-white rounded-md py-3'
-          onClick={pushToCloud}>
-          Save
-        </button>
+        <div className="w-full">
+          <button className={`px-4 py-3 text-lg text-white capitalize shadow-md rounded-md ${!formData.title || !imageAsset.uri
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-green-500 cursor-pointer'
+            }`} onClick={pushToCloud} disabled={!formData.title || !imageAsset.uri}>
+            Save & Publish
+          </button>
+        </div>
       </div>
-
-      {/* Right container */}
-      <div className='col-span-12 lg:col-span-8 2xl:col-span-9'>
-        {/* Placeholder for the right container */}
+        {/* Right container */}
+        <div className='col-span-12 lg:col-span-8 2xl:col-span-9 px-2 w-full flex-1
+        py-4'>
+        {templatesIsLoading 
+        ?(<React.Fragment>
+          <div className="w-full h-full flex items-center justify-center">
+            <ClipLoader className='text-3xl text-gray-400' size={40} />
+          </div>
+        </React.Fragment>
+      ):(
+      <React.Fragment>
+        {templates && templates.length > 0 ? 
+            <React.Fragment>
+              <div className='w-full h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3
+              gap-4'>
+              {templates?.map(template =>(
+                <div key={template._id} className='w-full h-[500px] rounded-md overflow-hidden
+                relative'>
+                  <img src={template?.imageURL} className='w-full h-full object-cover' loading='eager' alt="" />
+                  <div className='absolute top-4 right-4 w-8 h-8 rounded-md flex items-center justify-center bg-red-500 cursor-pointer' onClick={()=> removeTemplate(template)}>
+                    <FaTrash className='text-white text-sm' />  
+                  </div>
+                </div>
+              ))}
+              </div>
+            </React.Fragment> 
+            : <React.Fragment>
+              <div className="w-full h-full flex items-center justify-center">
+            <FaSpinner className='text-3xl text-gray-400'  size={40}/>
+            <p className='text-xl tracking-wider capitalize to-txtPrimary'>
+              No templates found
+            </p>
+          </div>
+              </React.Fragment>}
+      </React.Fragment>)}
       </div>
     </div>
-  );
-};
+    
+  )
+}
 
 export default CreateTemplate;
