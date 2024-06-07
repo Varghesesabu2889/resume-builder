@@ -1,4 +1,3 @@
-// useTemplate hook
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 import { useQuery } from 'react-query';

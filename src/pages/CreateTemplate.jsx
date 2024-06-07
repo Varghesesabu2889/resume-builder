@@ -1,4 +1,3 @@
-// CreateTemplate Component
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { FaSpinner, FaTrash, FaUpload } from 'react-icons/fa';
@@ -11,7 +10,9 @@ import useTemplate from '../hooks/useTemplate';
 import useUser from '../hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 
+// CreateTemplate component
 const CreateTemplate = () => {
+  // State variables
   const [formData, setFormData] = useState({
     title: "",
     imageURL: null
@@ -24,6 +25,8 @@ const CreateTemplate = () => {
   });
 
   const [selectedTags, setSelectedTags] = useState([]);
+
+  // Using hooks
   const {
     data: templates,
     isLoading: templatesIsLoading,
@@ -31,15 +34,19 @@ const CreateTemplate = () => {
     refetch: templatesRefetch
   } = useTemplate();
 
+  const { data: user, isLoading } = useUser();
+
+  const navigate = useNavigate();
+
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevRec) => ({
       ...prevRec, [name]: value
     }));
   };
-const {data:user, isLoading}= useUser()
 
-const navigate = useNavigate()
+  // Handle image uploads
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     setImageAsset((prevAsset) => (
@@ -47,6 +54,7 @@ const navigate = useNavigate()
     ));
 
     if (file && isAllowed(file)) {
+      // Upload image to Firebase storage
       const storageRef = ref(storage, `Templates/${Date.now()}-${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -59,6 +67,7 @@ const navigate = useNavigate()
           }));
         },
         (error) => {
+          // Handle upload errors
           if (error.message.includes("storage/unauthorized")) {
             toast.error(`Error: Authorization revoked`);
           } else {
@@ -66,6 +75,7 @@ const navigate = useNavigate()
           }
         },
         () => {
+          // Get download URL and update imageAsset state
           getDownloadURL(uploadTask.snapshot.ref).then(getDownloadURL => {
             setImageAsset((prevAsset) => ({
               ...prevAsset,
@@ -77,11 +87,13 @@ const navigate = useNavigate()
         }
       );
     } else {
+      // Handle invalid file format
       toast.warning("Invalid File Format");
       setImageAsset((prevAsset) => ({ ...prevAsset, isImageLoading: false }));
     }
   };
 
+  // Delete an image object
   const deleteAnImageObject = async () => {
     setImageAsset((prevAsset) => (
       { ...prevAsset, isImageLoading: true }
@@ -100,11 +112,13 @@ const navigate = useNavigate()
     });
   };
 
+  // Check if a file is allowed
   const isAllowed = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     return allowedTypes.includes(file.type);
   };
 
+  // Handle tag selection
   const handleSelectedTags = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter(selected => selected !== tag));
@@ -113,6 +127,7 @@ const navigate = useNavigate()
     }
   };
 
+  // Push data to the cloud
   const pushToCloud = async () => {
     const timeStamp = serverTimestamp();
     const id = `${Date.now()}`;
@@ -121,45 +136,48 @@ const navigate = useNavigate()
       title: formData.title,
       imageURL: imageAsset.uri,
       tags: selectedTags,
-      name: templates && templates.length >0
-      ? `Template${templates.length+1}`
+      name: templates && templates.length > 0
+      ? `Template${templates.length + 1}`
       : "Template1",
       timeStamp: timeStamp
     };
-    await setDoc(doc(db,"templates",id),_doc).then(()=>{
-      setFormData((prevData)=>({
-        ...prevData,title:"",
-        imageURL:""}))
-        setImageAsset((prevAsset)=>({...prevAsset,
-          uri:null,
-        }))  
-        setSelectedTags([])
-        templatesRefetch()
-        toast.success("New template added successfully")
-    }).catch(err=>{
-      toast.error(`Error: ${err.message}`)
-    })
+    await setDoc(doc(db, "templates", id), _doc).then(() => {
+      setFormData((prevData) => ({
+        ...prevData, title: "",
+        imageURL: ""
+      }));
+      setImageAsset((prevAsset) => ({ ...prevAsset,
+        uri: null,
+      }));
+      setSelectedTags([]);
+      templatesRefetch();
+      toast.success("New template added successfully");
+    }).catch(err => {
+      toast.error(`Error: ${err.message}`);
+    });
   };
-  // remove data from the cloud
-  const removeTemplate = async (template) =>{
-    const deleteRef = ref(storage,template?.imageURL)
-    await deleteObject(deleteRef).then(async()=>{
- await deleteDoc(doc(db,"templates",template?._id)).then(()=>{
-  toast.success("Template deleted successfully..")
-  templatesRefetch()
- }).catch(err =>{
-  toast.error(`Error: ${err.message}`)
- })
-})
-  }
 
+  // Remove data from the cloud
+  const removeTemplate = async (template) => {
+    const deleteRef = ref(storage, template?.imageURL);
+    await deleteObject(deleteRef).then(async () => {
+      await deleteDoc(doc(db, "templates", template?._id)).then(() => {
+        toast.success("Template deleted successfully");
+        templatesRefetch();
+      }).catch(err => {
+        toast.error(`Error: ${err.message}`);
+      });
+    }).catch(error => {
+      toast.error(`Error: ${error.message}`);
+    });
+  };
 
-useEffect(()=>{
-if(!isLoading && !adminIds.includes(user?.uid)){
-  navigate('/',{replace:true})
-}
-},[user,isLoading])
-
+  // Redirect to home if user is not an admin
+  useEffect(() => {
+    if (!isLoading && !adminIds.includes(user?.uid)) {
+      navigate('/');
+    }
+  }, [isLoading, user?.uid, navigate]);
 
   return (
     <div className='w-full px-4 lg:px-10 2xl:px-32 py-4 grid grid-cols-1 lg:grid-cols-12'>
