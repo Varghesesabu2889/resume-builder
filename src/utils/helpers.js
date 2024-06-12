@@ -1,3 +1,6 @@
+import Template1 from "../components/designs/Template1";
+import Template2 from "../components/designs/Template2";
+
 export const adminIds=["104578215053643777111","107780477103378425331"]
 
 export const initialTags = [
@@ -36,5 +39,7 @@ export const FiltersData = [
 ];
 
 export const TemplatesData =[
-  {id:`template-${D}`}
+  {id:`template-${Date.now()}`,name:"Template1",component: Template1},
+  {id:`template-${Date.now()}`,name:"Template2",component: Template2}
 ]
+
