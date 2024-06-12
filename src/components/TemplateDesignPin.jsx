@@ -6,10 +6,14 @@ import { saveToCollections, saveToFavorites } from '../api/index';
 import { FadeInOutWithOpacity, scaleInOut } from '../animation';
 import InnerBoxCard from './InnerBoxModel';
 import useTemplate from '../hooks/useTemplate';
+import { useNavigate } from 'react-router-dom';
 
 const TemplateDesignPin = ({ data, index }) => {
   const { data: user, refetch: userRefetch } = useUser();
   const { refetch: temp_Refetch } = useTemplate();
+
+const navigate = useNavigate()
+
 const [isHovered, setIsHovered] = useState(false)
   const addToCollection = async (e) => {
     e.stopPropagation();
@@ -25,6 +29,12 @@ const [isHovered, setIsHovered] = useState(false)
       temp_Refetch();
   };
 
+const handleRouteNavigation =() =>{
+  navigate(`/resumeDetail/${data?._id}`, {replace:true})
+}
+
+
+
   return (
     <motion.div key={data?._id} {...scaleInOut(index)}>
       <div className="w-full h-[240px] 2xl:h-[450px] rounded-md bg-gray-200 overflow-hidden relative"
@@ -35,11 +45,13 @@ const [isHovered, setIsHovered] = useState(false)
           {isHovered && (
             <motion.div
             {...FadeInOutWithOpacity}
+            onClick={handleRouteNavigation}
             className="absolute inset-0 bg-[rgba(0,0,0,0.4)] flex flex-col items-center justify-start px-4 py-3 z-50 cursor-pointer"
           >
             <div className="flex flex-col items-end justify-start w-full gap-8">
               <InnerBoxCard 
-                label={user?.collections?.includes(data?._id) ? "Added to Collection" : "Add to Collection"} 
+                label=
+                {user?.collections?.includes(data?._id) ? "Added to Collection" : "Add to Collection"} 
                 Icon={user?.collections?.includes(data?._id) ? BiSolidFolderPlus : BiFolderPlus} 
                 onHandle={addToCollection} 
               />

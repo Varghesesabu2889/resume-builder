@@ -40,6 +40,7 @@ const RenderATemplate = ({ templates }) => {
   return (
     <React.Fragment>
       {templates && templates.length > 0 ? (
+         <React.Fragment>
         <AnimatePresence>
           {templates.map((template, index) => (
             <TemplateDesignPin
@@ -49,11 +50,13 @@ const RenderATemplate = ({ templates }) => {
             />
           ))}
         </AnimatePresence>
-      ) : (
-        <p>No Data Found</p>
-      )}
-    </React.Fragment>
+        </React.Fragment>
+        ):(
+          <React.Fragment>
+            <p>No Data found</p>
+          </React.Fragment>
+        )}
+</React.Fragment>
   )
 }
-
 export default HomeContainer

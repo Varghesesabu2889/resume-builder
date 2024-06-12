@@ -2,7 +2,7 @@ import React from 'react'
 
 const CreateResume = () => {
   return (
-    <div>CreateResume</div>
+    <div className='w-full flex flex-col items-center justify-start '>CreateResume</div>
   )
 }
 

@@ -79,3 +79,15 @@ export const saveToFavorites = async (user, data) => {
       toast.success('Removed From Favorites');
   }
 };
+
+export const getTemplateDetails = async(templateID)=>{
+return new Promise((resolve,reject)=>{
+  const unsubscribe = onSnapshot(doc(db,"templates",templateID),
+(doc)=>{resolve(doc.data())
+
+})
+return unsubscribe
+
+})
+
+}
