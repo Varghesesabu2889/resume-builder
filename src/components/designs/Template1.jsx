@@ -14,6 +14,8 @@ import  temp1  from "../../assets/images/Template1.png"
 import { AnimatePresence,motion } from 'framer-motion';
 import { FadeInOutWIthOpacity, opacityINOut } from "../../animation";
 import jsPDF from 'jspdf';
+import MainSpinner from "../MainSpinner";
+
 
 
 const Template1 = () => {
@@ -289,11 +291,69 @@ const generatePDF = async () => {
    })
 };
 
-const generateImage = async () => {};
+const generateImage = async () => {
+   //access the dom element using useRef hook
+   const element = resumeRef.current
+   if(!element){
+       toast.info("Unable to capture the content at a moment");
+       return
+   }
+   htmlToImage
+   . toJpeg(element).then((dataUrl) => {
+    const a = document.createElement("a")
+    a.href = dataUrl;
+    a.download = "resume.jpg"
+    a.click()
 
-const generatePng = async () => {};
+   })
+   .catch((err)=>{
+    toast.error(`Error :${err.message}`)
+})
 
-const generateSvg = async () => {};
+   
+};
+
+const generatePng = async () => {
+   //access the dom element using useRef hook
+   const element = resumeRef.current
+   if(!element){
+       toast.info("Unable to capture the content at a moment");
+       return
+   }
+   htmlToImage
+   . toPng(element).then((dataUrl) => {
+    const a = document.createElement("a")
+    a.href = dataUrl;
+    a.download = "resume.png"
+    a.click()
+
+   })
+   .catch((err)=>{
+    toast.error(`Error :${err.message}`)
+})
+
+};
+
+const generateSvg = async () => {
+   //access the dom element using useRef hook
+   const element = resumeRef.current
+   if(!element){
+       toast.info("Unable to capture the content at a moment");
+       return
+   }
+   htmlToImage
+   . toSvg(element).then((dataUrl) => {
+    const a = document.createElement("a")
+    a.href = dataUrl;
+    a.download = "resume.svg"
+    a.click()
+
+   })
+   .catch((err)=>{
+    toast.error(`Error :${err.message}`)
+})
+
+};
 
 
 
@@ -350,6 +410,26 @@ const generateSvg = async () => {};
       }));
     }
   }, [resumeData]);
+
+
+
+
+
+  if (resume_isLoading) return <MainSpinner />;
+
+  if (resume_isError) {
+    return (
+      <div className="w-full h-[60vh] flex flex-col items-center justify-center">
+        <p className="text-lg text-txtPrimary font-semibold">
+          Error While fetching the data
+        </p>
+      </div>
+    );
+  }
+
+
+
+
   
 return (
     <div className="w-full flex flex-col items-center justify-start gap-4">
