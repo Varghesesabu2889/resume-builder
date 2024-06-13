@@ -151,6 +151,16 @@ const Template1 = () => {
       [name]: value,
     }));
   };
+  const addEducation = () => {
+    const updatedEdu = [
+      ...education,
+      {
+        major: "ENTER YOUR MAJOR",
+        university: "Name of your university / college 2005-2009",
+      },
+    ];
+    setEducation(updatedEdu);
+  };
 
   const toggleEditable = () => {
     setIsEdit(!isEdit);
@@ -205,7 +215,7 @@ const Template1 = () => {
     }));
   };
 
-  // uploader finshed
+  // uploader finished
 
   const handleExpChange = (index, e) => {
     const { name, value } = e.target;
@@ -278,16 +288,16 @@ const Template1 = () => {
     setEducation(updatedEdu);
   };
 
-  const addEducation = () => {
-    const updatedEdu = [
-      ...education,
-      {
-        major: "ENTER YOUR MAJOR",
-        university: "Name of your university / college 2005-2009",
-      },
-    ];
-    setEducation(updatedEdu);
-  };
+   
+
+
+
+
+
+
+
+  
+
 
   const saveFormData = async () => {
     const timeStamp = serverTimestamp();
@@ -391,6 +401,48 @@ const Template1 = () => {
 
 
 
+  if (resume_isLoading) return <MainSpinner />;
+
+  if (resume_isError) {
+    return (
+      <div className="w-full h-[60vh] flex flex-col items-center justify-center">
+        <p className="text-lg text-txtPrimary font-semibold">
+          Error While fetching the data
+        </p>
+      </div>
+    );
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -433,6 +485,7 @@ const Template1 = () => {
         </p>
         <p>Edit</p>
       </div>
+
 
       <div className="w-full lg:w-[1200px] grid grid-cols-1 lg:grid-cols-12 px-6 lg:px-32">
         {/* template design */}
@@ -478,8 +531,19 @@ const Template1 = () => {
               />
             </div>
           </div>
+
+
+
+
+
+
+
+
+
           <div className="w-full h-auto grid grid-cols-12" ref={resumeRef}>
+
             <div className="col-span-4 bg-black flex flex-col items-center justify-start">
+
               <div className="w-full h-80 bg-gray-300 flex items-center justify-center">
                 {!imageAsset.imageURL ? (
                   <React.Fragment>
@@ -524,6 +588,13 @@ const Template1 = () => {
                   </div>
                 )}
               </div>
+
+
+
+
+
+
+
 
               <div className="w-full flex flex-col items-center justify-start pl-8 mt-4 gap-6">
                 <div className="w-full">
@@ -623,7 +694,14 @@ const Template1 = () => {
                     />
                   </div>
                 </div>
+            
+            
               </div>
+
+
+
+
+
 
               <div className="w-full flex flex-col items-start justify-start mt-6 gap-6">
                 <div className="w-full grid grid-cols-12">
@@ -721,6 +799,25 @@ const Template1 = () => {
                 </div>
               </div>
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <div className="col-span-8 flex flex-col items-center justify-start py-6 bg-white">
               <div className="w-full py-6"></div>
               {/* title */}
@@ -750,8 +847,14 @@ const Template1 = () => {
                 />
               </div>
 
+
+
+
+
               {/* about me */}
               <div className="w-full px-8 py-6 flex flex-col items-start justify-start gap-6">
+
+
                 <div className="w-full">
                   <p className="uppercase text-xl tracking-wider">About Me</p>
                   <div className="w-full h-1 bg-txtDark my-3"></div>
@@ -772,6 +875,15 @@ const Template1 = () => {
                     }}
                   />
                 </div>
+
+
+
+
+
+
+
+
+
 
                 {/* experience */}
                 <div className="w-full">
@@ -866,6 +978,8 @@ const Template1 = () => {
                     </AnimatePresence>
                   </div>
                 </div>
+
+
 
                 {/* skills */}
                 <div className="w-full">
