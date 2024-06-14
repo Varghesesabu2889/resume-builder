@@ -113,7 +113,7 @@ const clearFilter =()=>{
                       {data?.displayName && <p className="text-lg text-txtDark">{data?.displayName}</p>}
                       {/* menus */}
                       <div className="w-full flex-col items-start flex gap-8 pt-6">
-                        <Link className="text-txtLight hover:text-txtDark text-base whitespace-nowrap" to={"/profile"}>
+                        <Link className="text-txtLight hover:text-txtDark text-base whitespace-nowrap" to={`/profile/${data?.uid}`}>
                           My Account
                         </Link>
                         {adminIds.includes(data?.uid) && (

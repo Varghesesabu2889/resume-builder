@@ -104,3 +104,26 @@ export const getTemplateDetailEditByUser = (uid, id) => {
     return unsubscribe;
   });
 };
+
+export const getSavedResumes = (uid) => {
+  return new Promise((resolve, reject) => {
+    const templateQuery = query(
+      collection(db, "users", uid, "resumes"),
+      orderBy("timeStamp", "asc")
+    );
+
+    const unsubscribe = onSnapshot(
+      templateQuery,
+      (querySnap) => {
+        const templates = querySnap.docs.map((doc) => doc.data());
+        resolve(templates);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+
+    // Return the unsubscribe function so it can be called when needed
+    return unsubscribe;
+  });
+};

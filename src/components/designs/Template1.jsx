@@ -10,7 +10,7 @@ import useUser from "../../hooks/useUser";
 import { db } from '../../config/firebase.config';
 import { useQuery } from 'react-query';
 import { getTemplateDetailEditByUser } from '../../api';
-import  temp1  from "../../assets/images/Template1.png"
+import  profile  from "../../assets/images/profile.png"
 import { AnimatePresence,motion } from 'framer-motion';
 import { FadeInOutWIthOpacity, opacityINOut } from "../../animation";
 import jsPDF from 'jspdf';
@@ -511,7 +511,7 @@ return (
         <div className="w-full flex flex-col items-center justify-center h-full">
           <div className="w-full flex flex-col justify-center items-center cursor-pointer">
             <img
-              src={temp1}
+              src={profile}
               className="w-full h-80 object-cover"
               alt=""
             />
