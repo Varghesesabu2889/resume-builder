@@ -79,14 +79,14 @@ const saveFormData = async () => {
 
 //form data
    const [formData, setFormData] = useState({
-    fullname: "Karen Richards",
+    fullname: "James Richards",
     professionalTitle: "Professional Title",
     personalDescription: `Lorem ipsum dolor sit, amet consectetur adipisicing elit. Alia minus est culpa id corrupti nobis ullam harum, porro veniam facilis, obcaecati nulla magnam beatae quae at eos! Qui, similique laboriosam?`,
-    refererName: "Sara Taylore",
+    refererName: "Google",
     refererRole: "Director | Company Name",
-    mobile: "+91 0000-0000",
-    email: "urname@gmail.com",
-    website: "urwebsite.com",
+    mobile: "+91 89553-8628",
+    email: "vaghesesabu@gmail.com",
+    website: "",
     address: "your street address, ss, street, city/zip code - 1234",
   });
   const handleChange = (e) => {
@@ -559,7 +559,7 @@ return (
           Education
         </p>
 
-        <div className="w-full h-[2px] bg-yellow-400 mt-2"></div>
+        <div className="w-full h-[2px] bg-blue-400 mt-2"></div>
 
         <AnimatePresence>
           {education &&
@@ -632,7 +632,7 @@ return (
                   <p className="uppercase text-lg font-semibold text-gray-100">
                     Reference
                   </p>
-                  <div className="w-full h-[2px] bg-yellow-400 mt-2"></div>
+                  <div className="w-full h-[2px] bg-blue-400 mt-2"></div>
                   <div className="w-full pl-4 mt-3">
                     <input
                       value={formData.refererName}
@@ -667,7 +667,7 @@ return (
 
 <div className="w-full flex flex-col items-start justify-start mt-6 gap-6">
                 <div className="w-full grid grid-cols-12">
-                  <div className="col-span-3 w-full h-6 bg-yellow-400"></div>
+                  <div className="col-span-3 w-full h-6 bg-blue-400"></div>
                   <div className="col-span-9">
                     <div className="w-full h-6 bg-[rgba(45,45,45,0.6)] px-3 flex items-center">
                       <p className="text-sm font-semibold text-gray-200">
@@ -689,7 +689,7 @@ return (
 
                 {/* email */}
                 <div className="w-full grid grid-cols-12">
-                  <div className="col-span-3 w-full h-6 bg-yellow-400"></div>
+                  <div className="col-span-3 w-full h-6 bg-blue-400"></div>
                   <div className="col-span-9">
                     <div className="w-full h-6 bg-[rgba(45,45,45,0.6)] px-3 flex items-center">
                       <p className="text-sm font-semibold text-gray-200">
@@ -711,7 +711,7 @@ return (
 
                 {/* website */}
                 <div className="w-full grid grid-cols-12">
-                  <div className="col-span-3 w-full h-6 bg-yellow-400"></div>
+                  <div className="col-span-3 w-full h-6 bg-blue-400"></div>
                   <div className="col-span-9">
                     <div className="w-full h-6 bg-[rgba(45,45,45,0.6)] px-3 flex items-center">
                       <p className="text-sm font-semibold text-gray-200">
@@ -734,7 +734,7 @@ return (
 
                 {/* address */}
                 <div className="w-full grid grid-cols-12">
-                  <div className="col-span-3 w-full h-6 bg-yellow-400"></div>
+                  <div className="col-span-3 w-full h-6 bg-blue-400"></div>
                   <div className="col-span-9">
                     <div className="w-full h-6 bg-[rgba(45,45,45,0.6)] px-3 flex items-center">
                       <p className="text-sm font-semibold text-gray-200">
@@ -769,7 +769,7 @@ return (
 <div className="col-span-8 flex flex-col items-center justify-start py-6 bg-white">
 <div className="w-full py-6"></div>
               {/* title */}
-              <div className="w-full px-8 py-6 bg-yellow-500">
+              <div className="w-full px-8 py-6 bg-blue-500">
                 <div className="flex items-center justify-start ">
                   <input
                     type="text"
